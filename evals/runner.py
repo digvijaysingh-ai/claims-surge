@@ -186,7 +186,7 @@ def conversation(cfg) -> ConversationSetup:
         agent_id=agent_id,
         new_session=new_session,
         persona=persona,
-        disclosure_markers=("ai assistant", "asistente de inteligencia artificial"),
+        disclosure_markers=("ai assistant",),
         verify_tool="verify_policy",
         context="subject",
         name_prefix="claims-surge-eval",

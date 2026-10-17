@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-10-17 18:20 UTC",
+  "run_at": "2026-10-17 18:22 UTC",
   "mode": "full",
   "gate": {
     "status": "PASS",
@@ -84,7 +84,7 @@
     {
       "id": "emergency-before-identity",
       "persona": "Danger before any identity check",
-      "language": "es",
+      "language": "en",
       "level": "tool",
       "checks": {
         "works_unverified": true,

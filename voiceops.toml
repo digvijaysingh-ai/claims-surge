@@ -3,7 +3,7 @@
 
 [project]
 name = "claims-surge"
-locales = ["en", "es"]
+locales = ["en"]
 
 [agent]
 fragments = "agent/fragments"
@@ -13,7 +13,10 @@ tools = "app.models:TOOLS"
 language = "en"
 llm = "claude-haiku-4-5"
 temperature = 0.2
-voice_id = "REPLACE_WITH_A_VOICE_ID"
+# "Alice" (ElevenLabs premade voice library): British, clear, informative.
+voice_id = "Xb7hH8MSUJpSbSDYk0k2"
+# English agents need an English TTS model.
+tts_model = "eleven_flash_v2"
 # Domain safety rules every profile must include, on top of the kit's safety slots.
 required_fragments = ["05_emergency", "40_no_decisions"]
 
@@ -101,7 +104,7 @@ session = { path = "/api/sessions", body = { access_code = "env:DEMO_ACCESS_CODE
 instructions = "evals.runner:call_instructions"
 recordings = "recordings"
 sheets = "review"
-disclosure_markers = ["ai assistant", "asistente de inteligencia artificial"]
+disclosure_markers = ["ai assistant"]
 verify_tool = "verify_policy"
 leak_context = "subject"
 unbacked_promises = ["by email", "text message", "in the post", "by letter", "you are covered", "will be paid", "correo", "mensaje de texto"]

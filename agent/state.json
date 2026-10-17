@@ -1,0 +1,13 @@
+{
+  "tools": {
+    "record_disclosure": "tool_7601m55hgghneqna3c1n2kcrz8nz",
+    "report_emergency": "tool_5301m55hggvwe8zt54n9btar5tjq",
+    "verify_policy": "tool_5801m55hgj1qek0s5yr6017s726r",
+    "get_claim_status": "tool_5601m55hgjchez698e96dvkxmvqj",
+    "log_new_claim": "tool_3401m55hgjq2fvxvjy34srxe5e8j",
+    "transfer_to_human": "tool_4701m55hgkvmfrnsqymfssyjffkq",
+    "log_outcome": "tool_1401m55hgmz8fe6t7070a8k02sbk"
+  },
+  "agents": {},
+  "secret_id": "MMutbnXBF0O3LfpJdLcq"
+}
