@@ -27,20 +27,15 @@
     "api_schema": {
       "method": "POST",
       "request_body_schema": {
-        "description": "Check the caller is the account holder.",
+        "description": "Anyone in danger (water rising, gas, live wires, injury): call at once, at any point, even before identity. Then transfer_to_human.",
         "properties": {
-          "date_of_birth": {
-            "description": "Caller's date of birth, YYYY-MM-DD",
-            "type": "string"
-          },
-          "reference_last4": {
-            "description": "Last four characters of the caller's reference",
+          "reason": {
+            "description": "What the danger is, in a few words",
             "type": "string"
           }
         },
         "required": [
-          "date_of_birth",
-          "reference_last4"
+          "reason"
         ],
         "type": "object"
       },
@@ -52,10 +47,10 @@
           "secret_id": "{{TOOL_SECRET_ID}}"
         }
       },
-      "url": "{{TOOL_BASE_URL}}/tools/verify_identity"
+      "url": "{{TOOL_BASE_URL}}/tools/report_emergency"
     },
-    "description": "Check the caller is the account holder.",
-    "name": "verify_identity",
+    "description": "Anyone in danger (water rising, gas, live wires, injury): call at once, at any point, even before identity. Then transfer_to_human.",
+    "name": "report_emergency",
     "response_timeout_secs": 10,
     "type": "webhook"
   },
@@ -63,7 +58,43 @@
     "api_schema": {
       "method": "POST",
       "request_body_schema": {
-        "description": "Read the verified caller's case status and next step.",
+        "description": "Check the caller is the policyholder.",
+        "properties": {
+          "date_of_birth": {
+            "description": "Policyholder's date of birth, YYYY-MM-DD",
+            "type": "string"
+          },
+          "policy_last4": {
+            "description": "Last four digits of the policy number",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date_of_birth",
+          "policy_last4"
+        ],
+        "type": "object"
+      },
+      "request_headers": {
+        "X-Call-Token": {
+          "variable_name": "secret__call_token"
+        },
+        "X-Tool-Secret": {
+          "secret_id": "{{TOOL_SECRET_ID}}"
+        }
+      },
+      "url": "{{TOOL_BASE_URL}}/tools/verify_policy"
+    },
+    "description": "Check the caller is the policyholder.",
+    "name": "verify_policy",
+    "response_timeout_secs": 10,
+    "type": "webhook"
+  },
+  {
+    "api_schema": {
+      "method": "POST",
+      "request_body_schema": {
+        "description": "Read the verified policyholder's open claims and next steps.",
         "properties": {},
         "required": [],
         "type": "object"
@@ -76,10 +107,10 @@
           "secret_id": "{{TOOL_SECRET_ID}}"
         }
       },
-      "url": "{{TOOL_BASE_URL}}/tools/get_case"
+      "url": "{{TOOL_BASE_URL}}/tools/get_claim_status"
     },
-    "description": "Read the verified caller's case status and next step.",
-    "name": "get_case",
+    "description": "Read the verified policyholder's open claims and next steps.",
+    "name": "get_claim_status",
     "response_timeout_secs": 10,
     "type": "webhook"
   },
@@ -87,10 +118,63 @@
     "api_schema": {
       "method": "POST",
       "request_body_schema": {
-        "description": "Ask a person to call the caller back.",
+        "description": "Register a new claim (first notice of loss) for the verified policyholder.",
+        "properties": {
+          "description": {
+            "description": "What was damaged, in the caller's words (short)",
+            "type": "string"
+          },
+          "incident_date": {
+            "description": "When it happened, YYYY-MM-DD",
+            "type": "string"
+          },
+          "incident_type": {
+            "description": "What happened",
+            "enum": [
+              "storm",
+              "flood",
+              "fire",
+              "theft",
+              "other"
+            ],
+            "type": "string"
+          },
+          "people_safe": {
+            "description": "Is everyone safe now? false if anyone is in danger",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "description",
+          "incident_date",
+          "incident_type",
+          "people_safe"
+        ],
+        "type": "object"
+      },
+      "request_headers": {
+        "X-Call-Token": {
+          "variable_name": "secret__call_token"
+        },
+        "X-Tool-Secret": {
+          "secret_id": "{{TOOL_SECRET_ID}}"
+        }
+      },
+      "url": "{{TOOL_BASE_URL}}/tools/log_new_claim"
+    },
+    "description": "Register a new claim (first notice of loss) for the verified policyholder.",
+    "name": "log_new_claim",
+    "response_timeout_secs": 10,
+    "type": "webhook"
+  },
+  {
+    "api_schema": {
+      "method": "POST",
+      "request_body_schema": {
+        "description": "Ask a claims handler to call the caller back.",
         "properties": {
           "reason": {
-            "description": "Why the caller wants a person, in a few words",
+            "description": "Why the caller wants or needs a person, in a few words",
             "type": "string"
           }
         },
@@ -109,7 +193,7 @@
       },
       "url": "{{TOOL_BASE_URL}}/tools/transfer_to_human"
     },
-    "description": "Ask a person to call the caller back.",
+    "description": "Ask a claims handler to call the caller back.",
     "name": "transfer_to_human",
     "response_timeout_secs": 10,
     "type": "webhook"
@@ -124,6 +208,8 @@
             "description": "How the call ended",
             "enum": [
               "status_given",
+              "claim_logged",
+              "emergency_handoff",
               "handoff",
               "identity_failed",
               "voicemail",

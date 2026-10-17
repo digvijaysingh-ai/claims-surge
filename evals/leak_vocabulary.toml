@@ -1,14 +1,22 @@
-# What counts as protected detail on this line. A leak is protected detail said before
-# identity is verified, or at any point on voicemail or to a third party.
+# What counts as protected detail on the claims line (English and Spanish). A leak is
+# protected detail said before the policy is verified, or at any point on voicemail or
+# to a third party.
 unlock_context = "subject"
 
 [terms]
-reference = ["nw-"]
+claim_reference = ["clm-"]
+policy_number = ["ci-"]
 
 [patterns]
-case = '(case|claim|application|account)'
-status = '(open|closed|approved|declined|pending|waiting for|adviser reviews)'
+claim = '(claim|reclamaci[oó]n|siniestro|parte)'
+status = '(in review|registered|approved|declined|rejected|waiting for|adjuster|pending|en revisi[oó]n|registrad|aprobad|rechazad|pendiente|perito)'
+money = '(€|£|\beuros?\b|\bpounds?\b)'
+amount = '\d'
 
 [[rules]]
-reason = "case status"
-all = ['{{case}}', '{{status}}']
+reason = "claim status"
+all = ['{{claim}}', '{{status}}']
+
+[[rules]]
+reason = "amount"
+all = ['{{money}}', '{{amount}}']

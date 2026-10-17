@@ -1,24 +1,42 @@
 {
   "_comment": "demo: recording on, used only with the allow-listed phone and the browser widget. production-reference: zero retention, no recording.",
   "outbound-demo": {
-    "name": "claims-surge · outbound · demo",
+    "name": "Contoso claims line · outbound · demo",
     "direction": "outbound",
-    "fragments": ["00_role", "40_no_decisions", "50_case"],
+    "fragments": [
+      "00_role",
+      "05_emergency",
+      "40_no_decisions",
+      "50_claims",
+      "80_language"
+    ],
     "record_voice": true,
     "zero_retention_mode": false
   },
   "inbound-demo": {
-    "name": "claims-surge · inbound · demo",
+    "name": "Contoso claims line · inbound · demo",
     "direction": "inbound",
-    "fragments": ["00_role", "40_no_decisions", "50_case"],
+    "fragments": [
+      "00_role",
+      "05_emergency",
+      "40_no_decisions",
+      "50_claims",
+      "80_language"
+    ],
     "record_voice": true,
     "zero_retention_mode": false
   },
   "inbound-production-reference": {
-    "name": "claims-surge · inbound · production reference",
+    "name": "Contoso claims line · inbound · production reference",
     "direction": "inbound",
-    "first_message": "Hello, you're through to Contoso Insurance's AI assistant. How can I help?",
-    "fragments": ["00_role", "40_no_decisions", "50_case"],
+    "first_message": "Hello, you're through to Contoso Insurance's claims line. I'm an AI assistant. If anyone is in danger, hang up and call 112. How can I help?",
+    "fragments": [
+      "00_role",
+      "05_emergency",
+      "40_no_decisions",
+      "50_claims",
+      "80_language"
+    ],
     "record_voice": false,
     "zero_retention_mode": true
   }

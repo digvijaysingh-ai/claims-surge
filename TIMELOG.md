@@ -5,3 +5,4 @@ S2 asks: from `voiceops init` to a live agent passing its gate in three working 
 | Step | Finished at | Elapsed |
 |---|---|---|
 | `voiceops init claims-surge` | 2026-10-17 19:16:29 CEST | 0 |
+| Claims domain in; first passing tool-level gate (8/8, leak detector 9/9), tests and lint green | 2026-10-17 19:18:51 CEST | |

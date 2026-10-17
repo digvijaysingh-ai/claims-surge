@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from voiceops.guard import sign_webhook
 
 from app.api import Settings, create_app
-from app.service import SUBJECTS
+from app.service import synthetic_policies
 
 SECRET, HOOK, CODE = "tool-secret", "hook-secret", "letmein"
 
@@ -30,8 +30,8 @@ def session(client, purpose="inbound"):
 
 
 def test_tools_refuse_a_missing_or_wrong_secret(client):
-    assert tool(client, "get_case", "x", secret="nope").status_code == 401
-    assert client.post("/tools/get_case", json={}).status_code == 401
+    assert tool(client, "get_claim_status", "x", secret="nope").status_code == 401
+    assert client.post("/tools/get_claim_status", json={}).status_code == 401
 
 
 def test_sessions_need_the_access_code(client):
@@ -40,15 +40,33 @@ def test_sessions_need_the_access_code(client):
 
 def test_unbound_session_binds_on_verification(client):
     token = session(client)
-    assert tool(client, "get_case", token).json()["error"] == "identity_not_verified"
-    s = SUBJECTS[0]
-    body = {"date_of_birth": s.date_of_birth, "reference_last4": s.last4}
-    assert tool(client, "verify_identity", token, body).json()["status"] == "verified"
-    assert tool(client, "get_case", token).json()["case_status"] == s.case_status
+    assert tool(client, "get_claim_status", token).json()["error"] == "identity_not_verified"
+    p = synthetic_policies()[0]
+    body = {"date_of_birth": p.date_of_birth, "policy_last4": p.last4}
+    assert tool(client, "verify_policy", token, body).json()["status"] == "verified"
+    claims = tool(client, "get_claim_status", token).json()["claims"]
+    assert [c["reference"] for c in claims] == [p.claims[0].reference]
+
+
+def test_emergency_works_before_verification(client):
+    token = session(client)
+    r = tool(client, "report_emergency", token, {"reason": "water near sockets"}).json()
+    assert r["status"] == "emergency_flagged" and "112" in r["say"]
+
+
+def test_new_claim_needs_a_verified_policy(client):
+    token = session(client)
+    body = {
+        "incident_type": "storm",
+        "incident_date": "2026-03-01",
+        "description": "fence down",
+        "people_safe": True,
+    }
+    assert tool(client, "log_new_claim", token, body).json()["error"] == "identity_not_verified"
 
 
 def test_unknown_token_is_unauthorized_not_a_crash(client):
-    r = tool(client, "get_case", "not-a-token")
+    r = tool(client, "get_claim_status", "not-a-token")
     assert r.status_code == 200 and r.json()["error"] == "unauthorized"
 
 

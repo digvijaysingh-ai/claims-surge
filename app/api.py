@@ -97,9 +97,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise HTTPException(403, "wrong access code")
         if req.purpose not in ("inbound", "outbound"):
             raise HTTPException(400, "purpose is inbound or outbound")
-        # A test call is bound to the first synthetic subject; the caller still has to
-        # pass verify_identity as that subject.
-        subject = next(iter(svc.subjects)) if req.purpose == "outbound" else None
+        # A test call is bound to the first synthetic policy; the caller still has to
+        # pass verify_policy as that policyholder.
+        subject = next(iter(svc.policies)) if req.purpose == "outbound" else None
         call_id, token = svc.start_call(settings.clock(), subject)
         return {"call_id": call_id, "call_token": token}
 

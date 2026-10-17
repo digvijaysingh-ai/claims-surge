@@ -1,19 +1,22 @@
 """Service layer: everything the agent's tools call. Safeguards are enforced here, not in prompts.
 
-- Tools act only on the subject bound to the call token. Inbound calls start unbound and
-  bind on a successful verify_identity; outbound calls are bound to who was called.
-- Nothing about a case is returned before identity is verified, and every disclosure is
-  written to the ledger (identity before detail, proven by `voiceledger verify`).
+- Tools act only on the policy bound to the call token. Inbound calls start unbound and
+  bind on a successful verify_policy; outbound calls are bound to who was called.
+- Nothing about a claim is returned before the policy is verified, and every disclosure
+  is written to the ledger (identity before detail, proven by `voiceledger verify`).
+- An emergency can be reported at any point, verified or not, and is logged at once; the
+  ledger rule `emergency_handed_off` proves a handoff followed within two minutes.
+- The agent registers claims; it never decides cover or payouts (ledger rule `never`).
 - Two failed identity checks end the call.
 
-The store is in memory so the project runs from scratch; swap in Postgres
-(voiceops.guard.PgTokenStore, voiceledger.pg) when it goes live.
+In memory: one process, resets on restart. Swap in Postgres (voiceops.guard.PgTokenStore,
+voiceledger.pg) to keep claims and ledgers across restarts.
 """
 
 from __future__ import annotations
 
 import threading
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 from voiceledger import Event, append
@@ -23,25 +26,41 @@ MAX_FAILURES_PER_CALL = 2
 
 
 @dataclass(frozen=True)
-class Subject:
-    subject_id: str
-    date_of_birth: str
+class Claim:
     reference: str
-    case_status: str
+    status: str
     next_step: str
+
+
+@dataclass
+class Policy:
+    policy_id: str
+    date_of_birth: str
+    policy_number: str
+    claims: list[Claim] = field(default_factory=list)
 
     @property
     def last4(self) -> str:
-        """What the caller is asked for: the last four characters, ignoring dashes."""
-        return self.reference.replace("-", "")[-4:]
+        return self.policy_number.replace("-", "")[-4:]
 
 
-# Synthetic account holders (fictional; no real people).
-SUBJECTS = [
-    Subject("ACC-0001", "1961-04-12", "NW-48213-QX", "open", "an adviser reviews it this week"),
-    Subject("ACC-0002", "1975-09-30", "NW-77120-LB", "waiting for documents", "send your form"),
-    Subject("ACC-0003", "1988-01-05", "NW-30981-TT", "closed", "nothing more is needed"),
-]
+def synthetic_policies() -> list[Policy]:
+    """Fictional policyholders of a fictional insurer (no real people)."""
+    return [
+        Policy(
+            "POL-0001",
+            "1958-07-21",
+            "CI-7741-2290",
+            [Claim("CLM-2026-0412", "in review", "an adjuster visits on Tuesday")],
+        ),
+        Policy(
+            "POL-0002",
+            "1983-02-11",
+            "CI-5518-0367",
+            [Claim("CLM-2026-0398", "waiting for photos", "upload photos of the damage")],
+        ),
+        Policy("POL-0003", "1990-11-03", "CI-6620-8154"),
+    ]
 
 
 class ServiceError(Exception):
@@ -57,12 +76,13 @@ class IdentityNotVerified(ServiceError):
 
 
 class Service:
-    def __init__(self, subjects: list[Subject] = SUBJECTS, chain_id: str = "claims-surge:demo"):
-        self.subjects = {s.subject_id: s for s in subjects}
+    def __init__(self, policies: list[Policy] | None = None, chain_id: str = "claims-surge:demo"):
+        self.policies = {p.policy_id: p for p in policies or synthetic_policies()}
         self.tokens = MemoryTokenStore()
         self.events: list[Event] = []
         self.failures: dict[str, int] = {}
         self.chain_id = chain_id
+        self._next_claim = 500
         self._lock = threading.Lock()
 
     def _event(self, now: datetime, type: str, payload: dict, actor: str = "agent") -> None:
@@ -74,9 +94,16 @@ class Service:
         except UnknownToken as e:
             raise Unauthorized("unknown or finished call") from e
 
-    def start_call(self, now: datetime, subject_id: str | None = None) -> tuple[str, str]:
+    def _verified_policy(self, token: str) -> tuple[str, Policy]:
+        tok = self._resolve(token)
+        try:
+            return tok.call_id, self.policies[require_subject(tok)]
+        except NotVerified as e:
+            raise IdentityNotVerified("verify the policyholder first") from e
+
+    def start_call(self, now: datetime, policy_id: str | None = None) -> tuple[str, str]:
         with self._lock:
-            return self.tokens.issue(None, now, subject_id)
+            return self.tokens.issue(None, now, policy_id)
 
     def record_disclosure(self, token: str, now: datetime) -> dict:
         with self._lock:
@@ -84,20 +111,28 @@ class Service:
             self._event(now, "ai_disclosed", {"call_id": tok.call_id})
             return {"status": "recorded"}
 
-    def verify_identity(
-        self, token: str, date_of_birth: str, reference_last4: str, now: datetime
-    ) -> dict:
+    def report_emergency(self, token: str, reason: str, now: datetime) -> dict:
+        with self._lock:
+            tok = self._resolve(token)
+            self._event(now, "emergency_flagged", {"call_id": tok.call_id, "reason": reason[:200]})
+            return {
+                "status": "emergency_flagged",
+                "say": "If anyone is in danger, call 112 now.",
+                "next": "transfer_to_human",
+            }
+
+    def verify_policy(self, token: str, date_of_birth: str, policy_last4: str, now: datetime):
         with self._lock:
             tok = self._resolve(token)
             if tok.verified:
                 return {"status": "verified"}
-            last4 = reference_last4.strip().upper()
-            candidates = [tok.subject] if tok.subject else list(self.subjects)
+            last4 = policy_last4.strip()
+            candidates = [tok.subject] if tok.subject else list(self.policies)
             match = [
-                sid
-                for sid in candidates
-                if self.subjects[sid].date_of_birth == date_of_birth.strip()
-                and self.subjects[sid].last4 == last4
+                pid
+                for pid in candidates
+                if self.policies[pid].date_of_birth == date_of_birth.strip()
+                and self.policies[pid].last4 == last4
             ]
             if len(match) != 1:
                 n = self.failures[tok.call_id] = self.failures.get(tok.call_id, 0) + 1
@@ -107,27 +142,59 @@ class Service:
                     return {"status": "end_call"}
                 return {"status": "failed", "attempts_left": MAX_FAILURES_PER_CALL - n}
             self.tokens.bind(None, tok.call_id, match[0])
-            self._event(now, "identity_verified", {"call_id": tok.call_id, "subject": match[0]})
+            self._event(now, "identity_verified", {"call_id": tok.call_id, "policy": match[0]})
             return {"status": "verified"}
 
-    def get_case(self, token: str, now: datetime) -> dict:
+    def get_claim_status(self, token: str, now: datetime) -> dict:
         with self._lock:
-            tok = self._resolve(token)
-            try:
-                sid = require_subject(tok)
-            except NotVerified as e:
-                raise IdentityNotVerified("verify the caller's identity first") from e
-            s = self.subjects[sid]
+            call_id, policy = self._verified_policy(token)
+            self._event(now, "detail_disclosed", {"call_id": call_id, "fields": ["claims"]})
+            return {
+                "claims": [
+                    {"reference": c.reference, "status": c.status, "next_step": c.next_step}
+                    for c in policy.claims
+                ]
+            }
+
+    def log_new_claim(
+        self,
+        token: str,
+        incident_type: str,
+        incident_date: str,
+        description: str,
+        people_safe: bool,
+        now: datetime,
+    ) -> dict:
+        with self._lock:
+            call_id, policy = self._verified_policy(token)
+            if not people_safe:
+                self._event(now, "emergency_flagged", {"call_id": call_id, "reason": "unsafe"})
+                return {
+                    "status": "emergency_flagged",
+                    "say": "If anyone is in danger, call 112 now.",
+                    "next": "transfer_to_human",
+                }
+            self._next_claim += 1
+            ref = f"CLM-2026-{self._next_claim:04d}"
+            policy.claims.append(Claim(ref, "registered", "an adjuster contacts you"))
             self._event(
-                now, "detail_disclosed", {"call_id": tok.call_id, "fields": ["case_status"]}
+                now,
+                "claim_registered",
+                {"call_id": call_id, "reference": ref, "incident_type": incident_type},
             )
-            return {"case_status": s.case_status, "next_step": s.next_step}
+            self._event(now, "detail_disclosed", {"call_id": call_id, "fields": ["reference"]})
+            # Registering is all the agent does: cover and payouts are decided by a person.
+            return {
+                "status": "registered",
+                "reference": ref,
+                "next_step": "an adjuster contacts you; no decision on cover is made on this call",
+            }
 
     def transfer_to_human(self, token: str, reason: str, now: datetime) -> dict:
         with self._lock:
             tok = self._resolve(token)
             self._event(now, "handoff_to_human", {"call_id": tok.call_id, "reason": reason[:200]})
-            # No live transfer in the template: a person calls back. Never claim a transfer.
+            # No live transfer yet: a claims handler calls back. Never claim a transfer.
             return {"status": "callback_requested"}
 
     def log_outcome(self, token: str, outcome: str, now: datetime) -> dict:
@@ -140,8 +207,10 @@ class Service:
         """Dispatch a tool by name (the API and the evals use the same path)."""
         handlers = {
             "record_disclosure": lambda: self.record_disclosure(token, now),
-            "verify_identity": lambda: self.verify_identity(token, **body, now=now),
-            "get_case": lambda: self.get_case(token, now),
+            "report_emergency": lambda: self.report_emergency(token, body["reason"], now),
+            "verify_policy": lambda: self.verify_policy(token, **body, now=now),
+            "get_claim_status": lambda: self.get_claim_status(token, now),
+            "log_new_claim": lambda: self.log_new_claim(token, **body, now=now),
             "transfer_to_human": lambda: self.transfer_to_human(token, body["reason"], now),
             "log_outcome": lambda: self.log_outcome(token, body["outcome"], now),
         }
