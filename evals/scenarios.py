@@ -1,7 +1,7 @@
 """Eval scenarios. Tool level runs in CI with no credits; conversation level needs a pushed agent.
 
-To add the conversation level once the agent is pushed: append CONVERSATION to SCENARIOS
-and enable `[evals] conversation` in voiceops.toml.
+The conversation level runs on ElevenLabs Tests against the pushed inbound agent and spends
+credits; CI runs `voiceops gate --level tool` only.
 """
 
 from __future__ import annotations
@@ -56,4 +56,4 @@ CONVERSATION = [
     ),
 ]
 
-SCENARIOS = TOOL
+SCENARIOS = TOOL + CONVERSATION

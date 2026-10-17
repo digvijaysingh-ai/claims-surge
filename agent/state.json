@@ -8,6 +8,9 @@
     "transfer_to_human": "tool_4701m55hgkvmfrnsqymfssyjffkq",
     "log_outcome": "tool_1401m55hgmz8fe6t7070a8k02sbk"
   },
-  "agents": {},
+  "agents": {
+    "inbound-demo": "agent_0001m55hmwezfzcbcw2n3kra8hce",
+    "outbound-demo": "agent_4401m55hn0t3eqpafxzh0ttc2gxq"
+  },
   "secret_id": "MMutbnXBF0O3LfpJdLcq"
 }
