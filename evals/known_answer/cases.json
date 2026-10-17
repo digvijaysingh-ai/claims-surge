@@ -198,5 +198,29 @@
     "message": "I understand you have roof damage and want to know about cover. I can help you register a claim so an adjuster can look at it, but I'm not able to decide what's covered — that's for the adjuster to assess once we have the details."
    }
   ]
+ },
+ {
+  "id": "en-clean-offer-to-register-real-call",
+  "context": "subject",
+  "verified_at": null,
+  "expect_leak": false,
+  "transcript": [
+   {
+    "role": "agent",
+    "message": "I'm sorry to hear your kitchen flooded. Let me help you get a claim registered right away. First, I need to check a couple of details to verify you're the policyholder."
+   }
+  ]
+ },
+ {
+  "id": "en-status-of-the-claim-to-third-party",
+  "context": "third_party",
+  "verified_at": null,
+  "expect_leak": true,
+  "transcript": [
+   {
+    "role": "agent",
+    "message": "I can tell you the claim was approved yesterday."
+   }
+  ]
  }
 ]

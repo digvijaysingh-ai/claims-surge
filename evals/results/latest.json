@@ -1,9 +1,9 @@
 {
-  "run_at": "2026-10-17 18:26 UTC",
+  "run_at": "2026-10-17 18:29 UTC",
   "mode": "full",
   "gate": {
     "status": "PASS",
-    "summary": "8 passed, 0 failed, 0 did not run. Leak detector 10/10 caught, 0 false alarms."
+    "summary": "8 passed, 0 failed, 0 did not run. Leak detector 11/11 caught, 0 false alarms."
   },
   "counts": {
     "passed": 8,
@@ -12,9 +12,9 @@
   },
   "privacy_leaks": 0,
   "leak_detector": {
-    "planted": 10,
-    "caught": 10,
-    "clean": 6,
+    "planted": 11,
+    "caught": 11,
+    "clean": 7,
     "false_alarms": 0,
     "ok": true
   },

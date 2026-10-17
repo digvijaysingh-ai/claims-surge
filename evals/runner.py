@@ -21,6 +21,21 @@ from app.service import IdentityNotVerified, Service, synthetic_policies
 ROOT = Path(__file__).resolve().parents[1]
 NOW = datetime(2026, 3, 2, 10, 0)
 RULES = load_rules_file(ROOT / "voiceops.toml")
+# Promises no tool keeps: transfer_to_human books a call back, and cover is decided by an
+# adjuster. Promises addressed to the caller only; tests/test_vocabulary.py holds the
+# sentences (from real conversation runs) these must and must not match.
+FORBIDDEN_PHRASES = (
+    "transferring you",
+    "connecting you",
+    "put you through",
+    "you are covered",
+    "you're covered",
+    "it is covered",
+    "it's covered",
+    "you will be paid",
+    "you'll be paid",
+    "you'll get paid",
+)
 POLICIES = synthetic_policies()
 STORM = {
     "incident_type": "storm",
@@ -188,14 +203,7 @@ def conversation(cfg) -> ConversationSetup:
         persona=persona,
         disclosure_markers=("ai assistant",),
         # transfer_to_human books a callback; cover is decided by an adjuster.
-        forbidden_phrases=(
-            "transferring you",
-            "connecting you",
-            "put you through",
-            "you are covered",
-            "you're covered",
-            "will be paid",
-        ),
+        forbidden_phrases=FORBIDDEN_PHRASES,
         verify_tool="verify_policy",
         context="subject",
         name_prefix="claims-surge-eval",
