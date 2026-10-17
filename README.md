@@ -1,6 +1,6 @@
 # claims-surge
 
-Voice agent for Contoso Insurance, built on voiceops: safety defaults, a release gate, an audit ledger, deploy checks and a real-call review loop from day one.
+Voice agent for Contoso Insurance, built on [voiceops](https://github.com/digvijaysingh-ai/voiceops): safety defaults, a release gate, an audit ledger, deploy checks and a real-call review loop from day one.
 
 An inbound and outbound claims line for a fictional insurer after a storm: policyholders check a claim's status or register a new one, and anyone in danger is told to call 112 and passed to a person, before any identity check. Synthetic data only.
 
