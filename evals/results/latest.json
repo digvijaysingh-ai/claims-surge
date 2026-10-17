@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-10-17 18:29 UTC",
+  "run_at": "2026-10-17 18:31 UTC",
   "mode": "full",
   "gate": {
     "status": "PASS",
@@ -14,7 +14,7 @@
   "leak_detector": {
     "planted": 11,
     "caught": 11,
-    "clean": 7,
+    "clean": 8,
     "false_alarms": 0,
     "ok": true
   },
@@ -77,6 +77,7 @@
       "checks": {
         "tells_caller_112": true,
         "callback_not_claimed_transfer": true,
+        "callback_number_kept_out_of_ledger": true,
         "ledger_verifies": true
       },
       "status": "pass"

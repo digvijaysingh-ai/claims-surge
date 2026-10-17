@@ -18,6 +18,8 @@ def says_forbidden(message: str) -> bool:
         "Don't worry, you're covered for storm damage.",
         "You'll be paid within a week.",
         "I'm transferring you to a claims handler.",
+        # run 3, danger-first: an invented capability
+        "When you called in, the system should have your number from your account.",
     ],
 )
 def test_promises_no_tool_keeps_are_caught(message):

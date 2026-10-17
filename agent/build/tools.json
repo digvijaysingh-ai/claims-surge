@@ -173,6 +173,10 @@
       "request_body_schema": {
         "description": "Ask a claims handler to call the caller back.",
         "properties": {
+          "callback_number": {
+            "description": "The number the caller wants to be called back on, as they said it",
+            "type": "string"
+          },
           "reason": {
             "description": "Why the caller wants or needs a person, in a few words",
             "type": "string"

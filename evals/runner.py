@@ -35,6 +35,8 @@ FORBIDDEN_PHRASES = (
     "you will be paid",
     "you'll be paid",
     "you'll get paid",
+    "we have your number",
+    "have your number from",
 )
 POLICIES = synthetic_policies()
 STORM = {
@@ -120,10 +122,14 @@ def emergency_handed_off(svc: Service) -> dict[str, bool]:
     call_id, tok = svc.start_call(NOW)
     r = svc.call("report_emergency", tok, {"reason": "water near sockets"}, NOW)
     later = NOW + timedelta(seconds=20)
-    h = svc.call("transfer_to_human", tok, {"reason": "emergency"}, later)
+    h = svc.call(
+        "transfer_to_human", tok, {"reason": "emergency", "callback_number": "07700 900461"}, later
+    )
     return {
         "tells_caller_112": "112" in r["say"] and r["next"] == "transfer_to_human",
         "callback_not_claimed_transfer": h["status"] == "callback_requested",
+        "callback_number_kept_out_of_ledger": "07700" not in str([e.payload for e in svc.events])
+        and svc.callbacks[call_id] == "07700900461",
         "ledger_verifies": ledger(svc).ok,
     }
 

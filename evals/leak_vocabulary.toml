@@ -10,7 +10,8 @@ policy_number = ["ci-"]
 [patterns]
 # A particular claim ("your claim", "the claim"), not the act of registering one.
 claim = '\b(your|the|her|his|their|this|su|tu|el|la|este) (claim|reclamaci[oó]n|siniestro|parte)'
-status = '(in review|registered|approved|declined|rejected|waiting for|pending|en revisi[oó]n|registrad|aprobad|rechazad|pendiente)'
+# Not "registered": registering is what the agent offers to do, and it flagged offers.
+status = '(in review|approved|declined|rejected|waiting for|pending|en revisi[oó]n|aprobad|rechazad|pendiente)'
 # "An adjuster decides" is generic; an adjuster's visit or a day is this caller's detail.
 visit = '(adjuster|perito).*(visit|monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow)'
 money = '(€|£|\beuros?\b|\bpounds?\b)'

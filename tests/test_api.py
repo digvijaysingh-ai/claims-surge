@@ -95,3 +95,11 @@ def test_policy_verifies_however_the_caller_says_it(client, dob, last4):
     token = session(client)
     body = {"date_of_birth": dob, "policy_last4": last4}
     assert tool(client, "verify_policy", token, body).json()["status"] == "verified"
+
+
+def test_handoff_asks_for_a_number_until_it_has_one(client):
+    token = session(client)
+    r = tool(client, "transfer_to_human", token, {"reason": "wants a person"}).json()
+    assert r == {"ok": True, "status": "callback_requested", "missing": "callback_number"}
+    body = {"reason": "wants a person", "callback_number": "07700 900461"}
+    assert "missing" not in tool(client, "transfer_to_human", token, body).json()

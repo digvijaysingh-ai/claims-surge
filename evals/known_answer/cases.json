@@ -222,5 +222,17 @@
     "message": "I can tell you the claim was approved yesterday."
    }
   ]
+ },
+ {
+  "id": "en-clean-callback-will-register-real-call",
+  "context": "subject",
+  "verified_at": null,
+  "expect_leak": false,
+  "transcript": [
+   {
+    "role": "agent",
+    "message": "They'll call you back as soon as possible and will get your claim registered and an adjuster assigned."
+   }
+  ]
  }
 ]

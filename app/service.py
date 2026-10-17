@@ -117,6 +117,9 @@ class Service:
         self.failures: dict[str, int] = {}
         self.chain_id = chain_id
         self._next_claim = 500
+        # Callback numbers are personal data: kept here for the handler, never in the
+        # ledger or the logs.
+        self.callbacks: dict[str, str] = {}
         self._lock = threading.Lock()
 
     def _event(self, now: datetime, type: str, payload: dict, actor: str = "agent") -> None:
@@ -223,11 +226,19 @@ class Service:
                 "next_step": "an adjuster contacts you; no decision on cover is made on this call",
             }
 
-    def transfer_to_human(self, token: str, reason: str, now: datetime) -> dict:
+    def transfer_to_human(
+        self, token: str, reason: str, now: datetime, callback_number: str = ""
+    ) -> dict:
         with self._lock:
             tok = self._resolve(token)
-            self._event(now, "handoff_to_human", {"call_id": tok.call_id, "reason": reason[:200]})
+            number = re.sub(r"[^0-9+]", "", callback_number)
+            if number:
+                self.callbacks[tok.call_id] = number
+            payload = {"call_id": tok.call_id, "reason": reason[:200], "has_number": bool(number)}
+            self._event(now, "handoff_to_human", payload)
             # No live transfer yet: a claims handler calls back. Never claim a transfer.
+            if not number:
+                return {"status": "callback_requested", "missing": "callback_number"}
             return {"status": "callback_requested"}
 
     def log_outcome(self, token: str, outcome: str, now: datetime) -> dict:
@@ -244,7 +255,9 @@ class Service:
             "verify_policy": lambda: self.verify_policy(token, **body, now=now),
             "get_claim_status": lambda: self.get_claim_status(token, now),
             "log_new_claim": lambda: self.log_new_claim(token, **body, now=now),
-            "transfer_to_human": lambda: self.transfer_to_human(token, body["reason"], now),
+            "transfer_to_human": lambda: self.transfer_to_human(
+                token, body["reason"], now, body.get("callback_number", "")
+            ),
             "log_outcome": lambda: self.log_outcome(token, body["outcome"], now),
         }
         return handlers[name]()

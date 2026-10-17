@@ -35,6 +35,9 @@ class ReportEmergency(BaseModel):
 
 class TransferToHuman(BaseModel):
     reason: str = Field(description="Why the caller wants or needs a person, in a few words")
+    callback_number: str = Field(
+        "", description="The number the caller wants to be called back on, as they said it"
+    )
 
 
 class LogOutcome(BaseModel):
