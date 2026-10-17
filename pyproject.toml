@@ -26,6 +26,6 @@ testpaths = ["tests"]
 pythonpath = ["."]
 
 [tool.uv.sources]
-# voiceops 0.1.0 from its GitHub release (until it's on PyPI).
-voiceops = { url = "https://github.com/digvijaysingh-ai/voiceops/archive/refs/tags/v0.1.0.tar.gz", subdirectory = "packages/voiceops" }
-voiceledger = { url = "https://github.com/digvijaysingh-ai/voiceops/archive/refs/tags/v0.1.0.tar.gz", subdirectory = "packages/voiceledger" }
+# voiceops 0.1.1 from its GitHub release (until it's on PyPI).
+voiceops = { url = "https://github.com/digvijaysingh-ai/voiceops/archive/refs/tags/v0.1.1.tar.gz", subdirectory = "packages/voiceops" }
+voiceledger = { url = "https://github.com/digvijaysingh-ai/voiceops/archive/refs/tags/v0.1.1.tar.gz", subdirectory = "packages/voiceledger" }

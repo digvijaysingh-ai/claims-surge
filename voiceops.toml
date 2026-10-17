@@ -74,6 +74,7 @@ results = "evals/results"
 
 [deploy]
 base_url = "env:API_URL"
+timeout_s = 60  # the free instance sleeps; the first request wakes it
 
 [[deploy.checks]]
 check = "health"
