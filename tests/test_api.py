@@ -80,3 +80,18 @@ def test_post_call_webhook_needs_a_fresh_signature(client):
 
     assert post(good).status_code == 200
     assert post(stale).status_code == 401
+
+
+@pytest.mark.parametrize(
+    "dob, last4",
+    [
+        ("1958-07-21", "2290"),
+        ("1958-7-21", "2290"),
+        ("21/07/1958", "2 2 9 0"),
+        ("July 21st, 1958", "2290"),
+    ],
+)
+def test_policy_verifies_however_the_caller_says_it(client, dob, last4):
+    token = session(client)
+    body = {"date_of_birth": dob, "policy_last4": last4}
+    assert tool(client, "verify_policy", token, body).json()["status"] == "verified"
