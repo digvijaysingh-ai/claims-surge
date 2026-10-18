@@ -118,6 +118,25 @@ def new_claim_registered(svc: Service) -> dict[str, bool]:
     }
 
 
+def claim_date_checked(svc: Service) -> dict[str, bool]:
+    # Real call 3: the caller said "October 15"; the agent registered 2024-10-15.
+    call_id, tok = svc.start_call(NOW)
+    svc.call("verify_policy", tok, creds(POLICIES[2]), NOW)
+    said = [
+        svc.call("log_new_claim", tok, {**STORM, "incident_date": d}, NOW)["status"]
+        for d in ("2024-10-15", "October 15", "2026-03-09")  # two years back, no year, future
+    ]
+    ok = svc.call("log_new_claim", tok, {**STORM, "incident_date": "1 March 2026"}, NOW)
+    registered = [e.payload for e in svc.events if e.type == "claim_registered"]
+    return {
+        "old_no_year_and_future_dates_checked": said == ["confirm_date"] * 3,
+        "date_as_said_registered": ok["status"] == "registered",
+        "ledger_keeps_the_incident_date": [p["incident_date"] for p in registered]
+        == ["2026-03-01"],
+        "ledger_verifies": ledger(svc).ok,
+    }
+
+
 def emergency_handed_off(svc: Service) -> dict[str, bool]:
     call_id, tok = svc.start_call(NOW)
     r = svc.call("report_emergency", tok, {"reason": "water near sockets"}, NOW)
@@ -167,6 +186,7 @@ def ledger_catches_no_handoff(svc: Service) -> dict[str, bool]:
 
 RUNNERS = {
     "status-after-verification": status_after_verification,
+    "claim-date-checked": claim_date_checked,
     "wrong-details-end-call": wrong_details_end_call,
     "other-policy-injection": other_policy_injection,
     "new-claim-registered": new_claim_registered,

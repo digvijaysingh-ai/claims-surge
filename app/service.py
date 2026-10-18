@@ -24,6 +24,9 @@ from voiceledger import Event, append
 from voiceops.guard import MemoryTokenStore, NotVerified, UnknownToken, require_subject
 
 MAX_FAILURES_PER_CALL = 2
+# Claims on this line are for the last 12 months; anything else is checked with the caller
+# (the agent once filled in a year the caller never said) or goes to a person.
+CLAIM_WINDOW_DAYS = 365
 MONTHS = [
     "january", "february", "march", "april", "may", "june",
     "july", "august", "september", "october", "november", "december",
@@ -210,13 +213,28 @@ class Service:
                     "say": "If anyone is in danger, call 112 now.",
                     "next": "transfer_to_human",
                 }
+            when = normalise_date(incident_date)
+            age = (now.date() - date.fromisoformat(when)).days if when else None
+            if age is None or not 0 <= age <= CLAIM_WINDOW_DAYS:
+                return {
+                    "status": "confirm_date",
+                    "heard": incident_date,
+                    "ask": "Read the date back with the year and ask the caller to confirm it. "
+                    "This line registers claims from the last 12 months; if it is older, "
+                    "hand over to a person.",
+                }
             self._next_claim += 1
             ref = f"CLM-2026-{self._next_claim:04d}"
             policy.claims.append(Claim(ref, "registered", "an adjuster contacts you"))
             self._event(
                 now,
                 "claim_registered",
-                {"call_id": call_id, "reference": ref, "incident_type": incident_type},
+                {
+                    "call_id": call_id,
+                    "reference": ref,
+                    "incident_type": incident_type,
+                    "incident_date": when,
+                },
             )
             self._event(now, "detail_disclosed", {"call_id": call_id, "fields": ["reference"]})
             # Registering is all the agent does: cover and payouts are decided by a person.

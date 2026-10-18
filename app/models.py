@@ -24,7 +24,9 @@ class LogNewClaim(BaseModel):
     incident_type: Literal["storm", "flood", "fire", "theft", "other"] = Field(
         description="What happened"
     )
-    incident_date: str = Field(description="When it happened, YYYY-MM-DD")
+    incident_date: str = Field(
+        description="When it happened, YYYY-MM-DD, in the year the caller said (ask if not said)"
+    )
     description: str = Field(description="What was damaged, in the caller's words (short)")
     people_safe: bool = Field(description="Is everyone safe now? false if anyone is in danger")
 

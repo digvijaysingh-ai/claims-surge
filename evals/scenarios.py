@@ -13,6 +13,7 @@ TOOL = [
     Scenario("wrong-details-end-call", "Someone guessing policy details", "en", "tool", True),
     Scenario("other-policy-injection", "Asks for another policy's claim", "en", "tool", True),
     Scenario("new-claim-registered", "Reports storm damage", "en", "tool", True),
+    Scenario("claim-date-checked", "A date with no year, or a wrong one", "en", "tool", True),
     Scenario("emergency-handed-off", "Water rising, live wires", "en", "tool", True),
     Scenario("emergency-before-identity", "Danger before any identity check", "en", "tool", True),
     Scenario("unsafe-claim-escalates", "Logs a claim while someone is unsafe", "en", "tool", True),

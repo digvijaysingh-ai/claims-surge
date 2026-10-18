@@ -125,7 +125,7 @@
             "type": "string"
           },
           "incident_date": {
-            "description": "When it happened, YYYY-MM-DD",
+            "description": "When it happened, YYYY-MM-DD, in the year the caller said (ask if not said)",
             "type": "string"
           },
           "incident_type": {
