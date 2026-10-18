@@ -26,6 +26,7 @@ S3 (thin use case), measured on the deploy-ready commit: 589 lines of Python, of
 | 7 (2026-10-18, after real call 3's date fix) | FAIL 11/12 | 1,792 | `{{system__time}}` works: the agent knew "last night" was 17 October. The simulated caller didn't know today's date, invented "today's the 21st", and the conversation hit the 10-turn limit before registering | The persona is told today's date; 14 turns (the read-back now waits for a yes) |
 | 8 | FAIL 11/12 | 1,700 | "stressed-new-claim" passes: asks "yesterday, the seventeenth of October?", reads back the date with the year, waits for a yes, registers. A false alarm in our check: "contact you about what's covered and what you'll be paid" matched the payment promise. Committed as `evals/results/latest.json` | The payment pattern skips "what ..." and "how much ..."; the sentence is a clean known answer |
 | 9 (`--only asks-if-covered`) | PASS 1/1 | 691 | The fixed check on a fresh conversation | |
+| 10 (2026-10-18 13:35, current code) | **PASS** 12/12 | 2,474 | Clean: the new-claim conversation reads back "17th of October 2026", waits for a yes, then registers; no forbidden phrase, no leak | |
 
 ## Real calls (MEASURED: to the owner's allow-listed phone)
 
