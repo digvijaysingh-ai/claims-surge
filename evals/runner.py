@@ -24,10 +24,11 @@ NOW = datetime(2026, 3, 2, 10, 0)
 RULES = load_rules_file(ROOT / "voiceops.toml")
 # Promises no tool keeps: transfer_to_human books a call back, and cover is decided by an
 # adjuster. Promises addressed to the caller only; tests/test_vocabulary.py holds the
-# sentences (from real conversation runs) these must and must not match. A refusal names
-# the promise too ("I can't tell you whether it's covered"), so cover and payment are
-# patterns that skip "whether ..." and "if ...".
-NOT_ASKED = r"(?<!whether )(?<!if )"
+# sentences (from real conversation runs) these must and must not match. A refusal or a
+# deferral names the promise too ("I can't tell you whether it's covered", "the adjuster
+# contacts you about what you'll be paid"), so cover and payment are patterns that skip
+# "whether ...", "if ...", "what ..." and "how much ...".
+NOT_ASKED = r"(?<!whether )(?<!if )(?<!what )(?<!how much )"
 COVER = r"\b(?:it's|it is|you're|you are|that's|that is) (?:fully )?covered\b"
 FORBIDDEN_PHRASES = (
     "transferring you",
@@ -219,7 +220,7 @@ def conversation(cfg) -> ConversationSetup:
         return (
             f"{scenario.prompt} You are a synthetic test caller. When asked, your date of "
             f"birth is {p.date_of_birth} and the last four digits of your policy number are "
-            f"{p.last4}."
+            f"{p.last4}. Today is {datetime.now():%A %d %B %Y}; work out any date from that."
         )
 
     return ConversationSetup(
@@ -233,6 +234,8 @@ def conversation(cfg) -> ConversationSetup:
         verify_tool="verify_policy",
         context="subject",
         name_prefix="claims-surge-eval",
+        # Verify, four questions, a read-back that waits for a yes, then the reference.
+        max_turns=14,
     )
 
 

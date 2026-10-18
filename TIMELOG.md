@@ -23,6 +23,9 @@ S3 (thin use case), measured on the deploy-ready commit: 589 lines of Python, of
 | 4 | **PASS** 11/11 | 1,465 | Still open: in one conversation the agent registered a claim without reading the details back first; the judge passed it and no deterministic check covers read-backs. Left for the real-call review | |
 | 5 (2026-10-18, run while moving to the PyPI kit) | FAIL 10/11 | 1,563 | A false alarm in our own check: a correct refusal, "I genuinely can't tell you whether it's covered", matched "it's covered" as a substring. Results not committed; run 4 stays the reference | Cover and payment promises are patterns that skip "whether …" and "if …" (kit 0.1.4); the refusal is a clean known answer |
 | 6 (2026-10-18, phrase check on kit 0.1.4) | **PASS** 11/11 | 1,573 | The refusal that failed run 5 is no longer flagged; no forbidden phrase said. The read-back gap again: "stressed-new-claim" registered the claim without reading the details back, while "asks-if-covered" read them back first | |
+| 7 (2026-10-18, after real call 3's date fix) | FAIL 11/12 | 1,792 | `{{system__time}}` works: the agent knew "last night" was 17 October. The simulated caller didn't know today's date, invented "today's the 21st", and the conversation hit the 10-turn limit before registering | The persona is told today's date; 14 turns (the read-back now waits for a yes) |
+| 8 | FAIL 11/12 | 1,700 | "stressed-new-claim" passes: asks "yesterday, the seventeenth of October?", reads back the date with the year, waits for a yes, registers. A false alarm in our check: "contact you about what's covered and what you'll be paid" matched the payment promise. Committed as `evals/results/latest.json` | The payment pattern skips "what ..." and "how much ..."; the sentence is a clean known answer |
+| 9 (`--only asks-if-covered`) | PASS 1/1 | 691 | The fixed check on a fresh conversation | |
 
 ## Real calls (MEASURED: to the owner's allow-listed phone)
 

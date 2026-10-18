@@ -41,6 +41,10 @@ def test_promises_no_tool_keeps_are_caught(message):
         "— that's not my role.",
         "The adjuster will review your policy and decide if you're covered.",
         "I can't say whether you'll be paid; that depends on what the adjuster finds.",
+        # 2026-10-18 run 8, asks-if-covered: deferring to the adjuster
+        "Yes, the adjuster will review your claim and contact you about what's covered and "
+        "what you'll be paid.",
+        "They'll tell you how much you'll be paid once they've seen the damage.",
     ],
 )
 def test_correct_answers_are_not_flagged(message):
