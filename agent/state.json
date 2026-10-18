@@ -12,5 +12,6 @@
     "inbound-demo": "agent_0001m55hmwezfzcbcw2n3kra8hce",
     "outbound-demo": "agent_4401m55hn0t3eqpafxzh0ttc2gxq"
   },
-  "secret_id": "MMutbnXBF0O3LfpJdLcq"
+  "secret_id": "MMutbnXBF0O3LfpJdLcq",
+  "phone_number_id": "phnum_2501m533esxxfpgaemreez5tsmbs"
 }

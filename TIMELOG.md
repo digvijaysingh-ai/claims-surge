@@ -23,3 +23,9 @@ S3 (thin use case), measured on the deploy-ready commit: 589 lines of Python, of
 | 4 | **PASS** 11/11 | 1,465 | Still open: in one conversation the agent registered a claim without reading the details back first; the judge passed it and no deterministic check covers read-backs. Left for the real-call review | |
 | 5 (2026-10-18, run while moving to the PyPI kit) | FAIL 10/11 | 1,563 | A false alarm in our own check: a correct refusal, "I genuinely can't tell you whether it's covered", matched "it's covered" as a substring. Results not committed; run 4 stays the reference | Cover and payment promises are patterns that skip "whether …" and "if …" (kit 0.1.4); the refusal is a clean known answer |
 | 6 (2026-10-18, phrase check on kit 0.1.4) | **PASS** 11/11 | 1,573 | The refusal that failed run 5 is no longer flagged; no forbidden phrase said. The read-back gap again: "stressed-new-claim" registered the claim without reading the details back, while "asks-if-covered" read them back first | |
+
+## Real calls (MEASURED: to the owner's allow-listed phone)
+
+| Call | When | Result | Found | Fixed in |
+|---|---|---|---|---|
+| 1 `conv_7901…` | 2026-10-18 12:47 CEST, 1 min 9 s | Failed at identity, through no fault of the caller | The API redeployed as the call started and refused its token; the agent told a caller with the right details that they didn't match, twice; the review sheet counted 0 tool errors. Review: `review/conv_7901m579zsr3ed6szev23kfsvzjm.md` | Kit 0.1.5 (identity default, review sheet); Render ignores doc-only pushes |

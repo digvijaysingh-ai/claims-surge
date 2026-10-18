@@ -3,7 +3,7 @@ name = "claims-surge"
 version = "0.1.0"
 description = "Voice agent for Contoso Insurance, built on voiceops."
 requires-python = ">=3.12"
-dependencies = ["voiceops[fastapi]>=0.1.4", "voiceledger>=0.1.4", "uvicorn>=0.30"]
+dependencies = ["voiceops[fastapi]>=0.1.5", "voiceledger>=0.1.5", "uvicorn>=0.30"]
 
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.6"]
