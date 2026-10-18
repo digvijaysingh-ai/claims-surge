@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import pytest
+from voiceops.evals import forbidden_said
 
 from evals.runner import FORBIDDEN_PHRASES
 
 
 def says_forbidden(message: str) -> bool:
-    return any(p in message.lower() for p in FORBIDDEN_PHRASES)
+    return bool(forbidden_said(message, FORBIDDEN_PHRASES))
 
 
 @pytest.mark.parametrize(
@@ -16,6 +17,8 @@ def says_forbidden(message: str) -> bool:
     [
         "I'm connecting you to someone right now who can help.",  # run 1, danger-first
         "Don't worry, you're covered for storm damage.",
+        "Storm damage? Yes, it’s covered.",  # curly apostrophe
+        "That is fully covered, don't worry.",
         "You'll be paid within a week.",
         "I'm transferring you to a claims handler.",
         # run 3, danger-first: an invented capability
@@ -33,6 +36,11 @@ def test_promises_no_tool_keeps_are_caught(message):
         "That's the right time to ask all your questions about cover and what will be paid.",
         "A claims handler will call you back as soon as possible.",
         "I can't decide what's covered: that's for the adjuster to assess.",
+        # 2026-10-18, asks-if-covered: refusals that name the promise
+        "I understand it's frustrating, but I genuinely can't tell you whether it's covered "
+        "— that's not my role.",
+        "The adjuster will review your policy and decide if you're covered.",
+        "I can't say whether you'll be paid; that depends on what the adjuster finds.",
     ],
 )
 def test_correct_answers_are_not_flagged(message):

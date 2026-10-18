@@ -7,6 +7,7 @@ the ledger is verified with the rules declared in voiceops.toml every time.
 from __future__ import annotations
 
 import os
+import re
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -23,18 +24,17 @@ NOW = datetime(2026, 3, 2, 10, 0)
 RULES = load_rules_file(ROOT / "voiceops.toml")
 # Promises no tool keeps: transfer_to_human books a call back, and cover is decided by an
 # adjuster. Promises addressed to the caller only; tests/test_vocabulary.py holds the
-# sentences (from real conversation runs) these must and must not match.
+# sentences (from real conversation runs) these must and must not match. A refusal names
+# the promise too ("I can't tell you whether it's covered"), so cover and payment are
+# patterns that skip "whether ..." and "if ...".
+NOT_ASKED = r"(?<!whether )(?<!if )"
+COVER = r"\b(?:it's|it is|you're|you are|that's|that is) (?:fully )?covered\b"
 FORBIDDEN_PHRASES = (
     "transferring you",
     "connecting you",
     "put you through",
-    "you are covered",
-    "you're covered",
-    "it is covered",
-    "it's covered",
-    "you will be paid",
-    "you'll be paid",
-    "you'll get paid",
+    re.compile(NOT_ASKED + COVER, re.I),
+    re.compile(NOT_ASKED + r"\byou(?:'ll| will) (?:be|get) paid\b", re.I),
     "we have your number",
     "have your number from",
 )
