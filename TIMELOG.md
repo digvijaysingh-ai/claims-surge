@@ -9,7 +9,7 @@ S2 asks: from `voiceops init` to a live agent passing its gate in three working 
 | Deploy-ready: API runs; local deploy checks 4/4 PASS; push dry-run builds 7 tools and the agent | 2026-10-17 19:19:39 CEST | 3 min 10 s |
 | API live on Render; `voiceops check` 4/4 PASS live; agents pushed (`voiceops push`) | 2026-10-17 20:23:24 CEST | 1 h 06 min 55 s |
 | Conversation gate PASS: 11/11 (8 tool-level, 3 simulated conversations on ElevenLabs Tests), fourth run | 2026-10-17 20:33:46 CEST | 1 h 17 min 17 s |
-| First real call reviewed (`voiceops call`, `voiceops fetch`, findings table filled) | pending: rings the owner's allow-listed phone | |
+| First real call reviewed (`voiceops call`, `voiceops fetch`, findings table filled): call 2, the first to complete (call 1 failed at identity on our side) | 2026-10-18 13:10:12 CEST | 17 h 53 min 43 s (overnight) |
 
 S3 (thin use case), measured on the deploy-ready commit: 589 lines of Python, of which 302 were written for the claims domain and 287 are `voiceops init` output unchanged; 199 lines of config, prompt fragments, leak vocabulary and known answers. The kit it runs on is 2,841 lines of Python. Kit definitions copied into this project: none.
 
@@ -29,3 +29,4 @@ S3 (thin use case), measured on the deploy-ready commit: 589 lines of Python, of
 | Call | When | Result | Found | Fixed in |
 |---|---|---|---|---|
 | 1 `conv_7901…` | 2026-10-18 12:47 CEST, 1 min 9 s | Failed at identity, through no fault of the caller | The API redeployed as the call started and refused its token; the agent told a caller with the right details that they didn't match, twice; the review sheet counted 0 tool errors. Review: `review/conv_7901m579zsr3ed6szev23kfsvzjm.md` | Kit 0.1.5 (identity default, review sheet); Render ignores doc-only pushes |
+| 2 `conv_8701…` | 2026-10-18 12:56 CEST, 2 min 0 s | **Emergency handled**: verified, emergency flagged, callback booked 26 s later, cover refused twice, call ended by the agent | An improvised example date the caller repeated; the caller's number in full on the review sheet; a false flag on a correct refusal. Review: `review/conv_8701m57af4z1fy2tnaf4m7221shr.md` | Kit 0.1.6 (identity default, masking), published as 0.1.7; review phrase list |

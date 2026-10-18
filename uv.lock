@@ -146,8 +146,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "uvicorn", specifier = ">=0.30" },
-    { name = "voiceledger", specifier = ">=0.1.5" },
-    { name = "voiceops", extras = ["fastapi"], specifier = ">=0.1.5" },
+    { name = "voiceledger", specifier = ">=0.1.7" },
+    { name = "voiceops", extras = ["fastapi"], specifier = ">=0.1.7" },
 ]
 
 [package.metadata.requires-dev]
@@ -635,19 +635,19 @@ wheels = [
 
 [[package]]
 name = "voiceledger"
-version = "0.1.5"
+version = "0.1.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6f/8e/3033f9c3611a12b27eb670ed43885beead0bd690aab86b664a8471ecab96/voiceledger-0.1.5.tar.gz", hash = "sha256:4276f11ff2a668255191088f39cf08125173484ab56f0cc3e053c91714cb5e38", size = 127538, upload-time = "2026-10-18T10:51:58.439Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/32/a2/c2b8b4d0b9023908b5ba554be05bdb73b379b7e7727a2603e40648d3d478/voiceledger-0.1.7.tar.gz", hash = "sha256:6db454e539a76439f3767c1bdd68f2ab56cd744aaeba589583b62cb07092b2da", size = 127539, upload-time = "2026-10-18T11:07:19.804Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/f0/6843cee0ac2bd896d5ea408b6689a8e5b6cd65d85527ddf27cd3a990254c/voiceledger-0.1.5-py3-none-any.whl", hash = "sha256:4736ad269c2f9d616efb7e5af2f964b3f7d0061a18f22fc90c83212b5c4c6038", size = 16024, upload-time = "2026-10-18T10:51:56.664Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/0b/40585fad79cb0fd35d2f4ed0ff290120d2e40c91ff6b9d702f69947ac325/voiceledger-0.1.7-py3-none-any.whl", hash = "sha256:7a582296618998c3399079b536d47cb4aa24060db0878a5609ca49f410d4dbd2", size = 16024, upload-time = "2026-10-18T11:07:18.56Z" },
 ]
 
 [[package]]
 name = "voiceops"
-version = "0.1.5"
+version = "0.1.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -656,9 +656,9 @@ dependencies = [
     { name = "typer" },
     { name = "voiceledger" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/54/0c/211cfdb73a0a85d74c1b785d0c5fa4e7c852ed7d6fdf07f699a0c8489027/voiceops-0.1.5.tar.gz", hash = "sha256:dcb57ddb3edc93bf5d4bb585fe71b4ec7e4f38e07eedce0e88d3caa915f3e31c", size = 59445, upload-time = "2026-10-18T10:52:01.33Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a5/5a/74e8b22a6d572c26bf4a7a6dac17a79486a63a37e7c4abbac307496cdf89/voiceops-0.1.7.tar.gz", hash = "sha256:b4fffc766ba9b8b9324319ed8243bd1c9eecf34f5ce76ebac9dfb8ca9c088fb7", size = 59965, upload-time = "2026-10-18T11:07:22.397Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/28/44/88d57bd66b29011fb122e5e380e507ad488bdc3620ba92d715b4923fb359/voiceops-0.1.5-py3-none-any.whl", hash = "sha256:4d37a8bc479777af4a89de2c89095ae7d147346d2b22b0f1a0cf58ba67b2d695", size = 65400, upload-time = "2026-10-18T10:52:00.184Z" },
+    { url = "https://files.pythonhosted.org/packages/aa/3d/1202deb133e3996fbe8abd294d5862f95196596099d76ec58a53f87d55e7/voiceops-0.1.7-py3-none-any.whl", hash = "sha256:4882bd5327cab724da8ef14c57a119c1bd7a9fe6d7ee209e80fd97a1ad21a6c0", size = 65715, upload-time = "2026-10-18T11:07:21.18Z" },
 ]
 
 [package.optional-dependencies]
