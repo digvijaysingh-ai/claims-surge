@@ -3,7 +3,7 @@ name = "claims-surge"
 version = "0.1.0"
 description = "Voice agent for Contoso Insurance, built on voiceops."
 requires-python = ">=3.12"
-dependencies = ["voiceops[fastapi]", "voiceledger", "uvicorn>=0.30"]
+dependencies = ["voiceops[fastapi]>=0.1.3", "voiceledger>=0.1.3", "uvicorn>=0.30"]
 
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.6"]
@@ -24,8 +24,3 @@ known-first-party = ["app", "evals"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-
-[tool.uv.sources]
-# voiceops 0.1.3 from its GitHub release (until it's on PyPI).
-voiceops = { url = "https://github.com/digvijaysingh-ai/voiceops/archive/refs/tags/v0.1.3.tar.gz", subdirectory = "packages/voiceops" }
-voiceledger = { url = "https://github.com/digvijaysingh-ai/voiceops/archive/refs/tags/v0.1.3.tar.gz", subdirectory = "packages/voiceledger" }
